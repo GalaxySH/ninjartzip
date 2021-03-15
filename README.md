@@ -1,6 +1,6 @@
 # ninjartzip
 
-A bot to manage a discord image distribution system.
+A bot to manage a discord image distribution system. Created by ComradeRooskie#6969.
 
 ### `conf.json`
 
