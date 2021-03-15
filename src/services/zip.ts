@@ -118,6 +118,7 @@ export const service: MessageService = {
             }
 
             fs.writeFileSync("./conf.json", JSON.stringify(conf, null, 2));
+            working = false;
         } catch (error) {
             xlg.error(error);
         }
