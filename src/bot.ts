@@ -46,7 +46,7 @@ client.on("ready", async () => {// This event will run if the bot starts, and lo
     setInterval(async () => {
         client.user?.setPresence({
             activity: {
-                name: "for new art",
+                name: `for new art | ${process.env.PREFIX}`,
                 type: 'WATCHING'
             },
             status: 'idle'
