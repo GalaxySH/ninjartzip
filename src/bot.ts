@@ -36,20 +36,20 @@ client.on("ready", async () => {// This event will run if the bot starts, and lo
     if (lo instanceof TextChannel) {
         lo.send(`Started \\🟩 \\🟩`).catch(console.error);
     }
-    setInterval(() => {
+    /*setInterval(() => {
         const lo = client.channels.cache.get('661614128204480522');
         if (lo instanceof TextChannel) {
             lo.send(`Scheduled Update: ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`).catch(xlg.error);
         }
-    }, 3600000);
+    }, 3600000);*/
 
     setInterval(async () => {
         client.user?.setPresence({
             activity: {
-                name: "the development",
+                name: "for new art",
                 type: 'WATCHING'
             },
-            status: 'dnd'
+            status: 'idle'
         }).catch(console.error);
     }, 20000); // Runs this every 20 seconds. Discord has an update LIMIT OF 15 SECONDS
 
