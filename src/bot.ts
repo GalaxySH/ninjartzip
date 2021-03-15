@@ -1,7 +1,7 @@
 'use strict';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config();require('source-map-support').install();
+require('dotenv').config(); require('source-map-support').install(); require("./utils/dlsite");
 
 import xlg from "./xlogger";
 import Discord, { PermissionString, TextChannel } from 'discord.js';

@@ -57,7 +57,9 @@ export const service: MessageService = {
                 }
             });
 
+            conf.outputPaths = [];
             const attachments: MessageAttachment[] = [];
+            const images: {img: Buffer, name: string}[] = [];
             let gi = 0;
             for await (const group of groups) {
                 if (!group.length) continue;
@@ -73,6 +75,7 @@ export const service: MessageService = {
                     const name = linkParts[linkParts.length - 1];
                     const r = await fetch(att.url);
                     const i = await r.buffer();
+                    images.push({img: i, name});
                     //fs.writeFileSync(`./media/${name}`, i);
                     folder.file(name, i);
                 }
@@ -85,6 +88,24 @@ export const service: MessageService = {
                 attachments.push(attach);
                 gi++;
             }
+
+            if (images.length && attachments.length > 1) {
+                const zip = new Zip();
+                zip.file("README.txt", `This is an automatically generated archive file.\n\nThe contents of this file are derived from a channel: #${message.channel.name} (${message.channel.id}).\n\nReport issues regarding this file or something related to ComradeRooskie#6969.`);
+                const folder = zip.folder("images");
+                if (!folder) {
+                    working = false;
+                    return;
+                }
+                for await (const i of images) {
+                    folder.file(i.name, i.img);
+                }
+                const zipped = await zip.generateAsync({ type: "nodebuffer" });
+                const outputName = `ninjartist_full.zip`;
+                const outputPath = `./zips/${outputName}`;
+                fs.writeFileSync(outputPath, zipped);
+            }
+
             if (conf.outputChannel && attachments.length) {
                 const outputChannel = message.client.channels.cache.get(conf.outputChannel);
                 if (outputChannel) {
@@ -92,7 +113,11 @@ export const service: MessageService = {
                         conf.id += 1;
                         const mdat: MessageOptions = {
                             content: `Gallery v${conf.id}\nGenerated at ${moment().format('YYYY-MM-DD HH:mm:ss')}`,
-                            files: [attachments[0]],
+                            //files: [attachments[0]],
+                            embed: {
+                                color: process.env.INFO_COLOR,
+                                description: `<:sminfo:818342088088354866> [Click here to download the full gallery easily](https://ninj.atlasatmos.net)`
+                            },
                         }
                         try {
                             const updatedMessage = await outputChannel.send(mdat);
@@ -112,7 +137,7 @@ export const service: MessageService = {
                                 conf.outputMessages = [updatedMessage.id];
                                 conf.oMessageLink = updatedMessage.url;
                             }
-                            attachments.shift();
+                            //attachments.shift();
                             if (attachments.length) {
                                 for await (const a of attachments) {
                                     const m = await outputChannel.send({
