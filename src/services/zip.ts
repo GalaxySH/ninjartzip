@@ -89,23 +89,6 @@ export const service: MessageService = {
                 gi++;
             }
 
-            if (images.length && attachments.length > 1) {
-                const zip = new Zip();
-                zip.file("README.txt", `This is an automatically generated archive file.\n\nThe contents of this file are derived from a channel: #${message.channel.name} (${message.channel.id}).\n\nReport issues regarding this file or something related to ComradeRooskie#6969.`);
-                const folder = zip.folder("images");
-                if (!folder) {
-                    working = false;
-                    return;
-                }
-                for await (const i of images) {
-                    folder.file(i.name, i.img);
-                }
-                const zipped = await zip.generateAsync({ type: "nodebuffer" });
-                const outputName = `ninjartist_full.zip`;
-                const outputPath = `./zips/${outputName}`;
-                fs.writeFileSync(outputPath, zipped);
-            }
-
             if (conf.outputChannel && attachments.length) {
                 const outputChannel = message.client.channels.cache.get(conf.outputChannel);
                 if (outputChannel) {
@@ -184,6 +167,23 @@ export const service: MessageService = {
                         conf.outputChannel = "";
                     }
                 }
+            }
+
+            if (images.length) {
+                const zip = new Zip();
+                zip.file("README.txt", `This is an automatically generated archive file.\n\nThe contents of this file are derived from a channel: #${message.channel.name} (${message.channel.id}).\n\nReport issues regarding this file or something related to ComradeRooskie#6969.`);
+                const folder = zip.folder("images");
+                if (!folder) {
+                    working = false;
+                    return;
+                }
+                for await (const i of images) {
+                    folder.file(i.name, i.img);
+                }
+                const zipped = await zip.generateAsync({ type: "nodebuffer" });
+                const outputName = `ninjartist_full.zip`;
+                const outputPath = `./zips/${outputName}`;
+                fs.writeFileSync(outputPath, zipped);
             }
 
             fs.writeFileSync("./conf.json", JSON.stringify(conf, null, 2));
