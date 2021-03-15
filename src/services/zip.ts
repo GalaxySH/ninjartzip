@@ -6,6 +6,7 @@ import Zip from 'jszip';
 import fetch from 'node-fetch';
 import moment from 'moment';
 
+let working = false;
 const maxfetch = parseInt(process.env.ZIP_REACHBACK || "0") || 1000;
 async function getAllMessages(c: TextChannel | NewsChannel, m?: Collection<string, Message>): Promise<Collection<string, Message>> {
     const msgs = await c.messages.fetch({ limit: 100 });
@@ -23,12 +24,17 @@ export const service: MessageService = {
     text: true,
     async execute(client, message: Message) {
         try {
+            if (working) return;
             const conf = JSON.parse(fs.readFileSync("./conf.json", 'utf-8'));
 
             if (message.channel.id !== conf.inputChannel || message.channel instanceof DMChannel || !message.attachments.size || !message.attachments.first()?.width) return;
+            working = true;
 
             const messages = await getAllMessages(message.channel);
-            if (!messages.size) return;
+            if (!messages.size) {
+                working = false;
+                return;
+            }
             const links: string[] = [];
             messages.forEach(m => {
                 if (m.attachments.size) {
@@ -43,7 +49,10 @@ export const service: MessageService = {
             const zip = new Zip();
             zip.file("README.txt", `This is an automatically generated archive file.\n\nThe contents of this file are derived from a channel: #${message.channel.name} (${message.channel.id}).\n\nReport issues regarding this file or something related to ComradeRooskie#6969.`);
             const folder = zip.folder("images");
-            if (!folder) return;
+            if (!folder) {
+                working = false;
+                return;
+            }
             for await (const link of links) {
                 const linkParts = link.split("/");
                 const name = linkParts[linkParts.length - 1];
@@ -66,7 +75,7 @@ export const service: MessageService = {
                         const attach = new MessageAttachment(outputPath);
                         conf.id += 1;
                         const mdat: MessageOptions = {
-                            content: `Photo Archive ${conf.id}\nGenerated at ${moment().format('YYYY-MM-DD HH:mm:ss')}`,
+                            content: `Gallery v${conf.id}\nGenerated at ${moment().format('YYYY-MM-DD HH:mm:ss')}`,
                             files: [attach],
                         }
                         const updatedMessage = await outputChannel.send(mdat);
