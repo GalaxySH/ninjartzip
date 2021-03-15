@@ -100,6 +100,7 @@ export const service: MessageService = {
                         }
                         if (updatedMessage && updatedMessage instanceof Message) {
                             conf.outputMessage = updatedMessage.id;
+                            conf.oMessageLink = updatedMessage.url;
                         }
                     } else {
                         conf.outputChannel = "";
