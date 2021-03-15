@@ -1,0 +1,6 @@
+{
+    "verbose": true,
+    "ignore": ["conf.json", "node_modules", "package.json", "package-lock.json", ".gitignore", ".eslintrc.json", "dist", "media", "zips"],
+    "delay": 2000,
+    "ext": "ts,js,json"
+}
