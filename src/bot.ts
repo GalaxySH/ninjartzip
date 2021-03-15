@@ -20,7 +20,7 @@ process.on('unhandledRejection', async (reason, promise) => {
     console.error(error, "Promise:", promise);
 });
 
-const client: XClient = new Discord.Client({ partials: ["MESSAGE"] });
+const client: XClient = new Discord.Client({ partials: ["MESSAGE"], restRequestTimeout: 30000 });
 client.specials = specials;
 
 client.on("ready", async () => {// This event will run if the bot starts, and logs in, successfully.
